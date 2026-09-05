@@ -1,13 +1,13 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const mime = require('mime-types');
+
 const formidableModule = require('formidable');
 const formidable = typeof formidableModule === 'function' 
     ? formidableModule 
     : (formidableModule.formidable || formidableModule.default);
-    
+
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -15,13 +15,8 @@ if (!fs.existsSync(uploadDir)) {
 
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/upload') {
-        const tempUploadDir = path.join(os.tmpdir(), 'uploads');
-        if (!fs.existsSync(tempUploadDir)) {
-            fs.mkdirSync(tempUploadDir, { recursive: true });
-        }
-
         const form = formidable({
-            uploadDir: tempUploadDir,
+            uploadDir: uploadDir,
             keepExtensions: true,
             maxFileSize: 10 * 1024 * 1024 // 10MB limit
         });
@@ -58,9 +53,6 @@ const server = http.createServer((req, res) => {
                 res.writeHead(400, { 'Content-Type': 'text/html' });
                 return res.end('<h2>Error: Invalid file type! Only images, PDFs, and TXT files are allowed.</h2><br><a href="/">Go Back</a>');
             }
-
-            const finalPath = path.join(uploadDir, uploadedFile.newFilename);
-            fs.renameSync(uploadedFile.filepath, finalPath);
 
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<h2>File uploaded successfully: ${uploadedFile.newFilename}</h2><br><a href="/">Go Back</a>`);
