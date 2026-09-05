@@ -6,7 +6,7 @@ const formidable = require('formidable');
 
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const server = http.createServer((req,res) => {
@@ -14,9 +14,8 @@ const server = http.createServer((req,res) => {
         const form = formidable({
             uploadDir: uploadDir,
             keepExtensions: true,
-            maxFileSize: 10 * 1024 * 1024,
+            maxFileSize: 10 * 1024 * 1024, // 10MB
             filter: function (part) {
-                // Compatible parameter structure for formidable parts
                 const validTypes = /jpeg|jpg|png|gif|pdf|txt/;
                 const filename = part.originalFilename || '';
                 const mimetype = part.mimetype || '';
@@ -28,19 +27,23 @@ const server = http.createServer((req,res) => {
 
         form.parse(req, (err, fields, files) => {
             if (err) {
+                console.error('Upload Parsing Error:', err);
                 res.writeHead(400, { 'Content-Type': 'text/html' });
-                return res.end(`<h2>Upload Error: ${err.message}</h2><a href="/">Go Back</a>`);
+                return res.end(`<h2>Upload Error: ${err.message}</h2><br><a href="/">Go Back</a>`);
             }
 
-            const uploadedFile = files.file ? files.file[0] : null;
+            let uploadedFile = null;
+            if (files.file) {
+                uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
+            }
 
-            if (!uploadedFile) {
+            if (!uploadedFile || !uploadedFile.newFilename) {
                 res.writeHead(400, { 'Content-Type': 'text/html' });
-                return res.end('<h2>Error: Invalid file type or no file uploaded.</h2><a href="/">Go Back</a>');
+                return res.end('<h2>Error: Invalid file type or no file selected.</h2><br><a href="/">Go Back</a>');
             }
 
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<h2>File uploaded successfully: ${uploadedFile.newFilename}</h2><a href="/">Go Back</a>`);
+            res.end(`<h2>File uploaded successfully: ${uploadedFile.newFilename}</h2><br><a href="/">Go Back</a>`);
         });
         return;
     }
