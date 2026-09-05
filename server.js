@@ -28,8 +28,8 @@ const server = http.createServer((req, res) => {
         form.parse(req, (err, fields, files) => {
             if (err) {
                 console.error('Upload Parsing Error:', err);
-                res.writeHead(400, { 'Content-Type': 'text/html' });
-                return res.end(`<h2>Upload Error: ${err.message}</h2><br><a href="/">Go Back</a>`);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ success: false, message: `Upload Error: ${err.message}` }));
             }
 
             let uploadedFile = null;
@@ -38,8 +38,8 @@ const server = http.createServer((req, res) => {
             }
 
             if (!uploadedFile || !uploadedFile.originalFilename) {
-                res.writeHead(400, { 'Content-Type': 'text/html' });
-                return res.end('<h2>Error: No file selected.</h2><br><a href="/">Go Back</a>');
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ success: false, message: 'No file selected.' }));
             }
 
             const validTypes = /jpeg|jpg|png|gif|pdf|txt/;
@@ -50,12 +50,18 @@ const server = http.createServer((req, res) => {
                 if (fs.existsSync(uploadedFile.filepath)) {
                     fs.unlinkSync(uploadedFile.filepath);
                 }
-                res.writeHead(400, { 'Content-Type': 'text/html' });
-                return res.end('<h2>Error: Invalid file type! Only images, PDFs, and TXT files are allowed.</h2><br><a href="/">Go Back</a>');
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ 
+                    success: false, 
+                    message: 'Invalid file type! Only images, PDFs, and TXT files are allowed.' 
+                }));
             }
 
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<h2>File uploaded successfully</h2><br><a href="/">Go Back</a>`);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ 
+                success: true, 
+                message: `File uploaded successfully: ${uploadedFile.newFilename}` 
+            }));
         });
         return;
     }
