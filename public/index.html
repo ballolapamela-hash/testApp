@@ -10,6 +10,13 @@
         <div class = "container">
             <h1>Welcome to the Node.js File Server</h1>
             <img src="inawall2.jpg" alt="test img">
+
+            <h2>Upload files (Maximum 10MB)</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <br><br>
+                <button type="submit">Upload</button>
+            </form>
         </div>
     </body>
 </html>
