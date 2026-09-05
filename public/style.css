@@ -69,3 +69,33 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #34495e;
 }
+
+#statusMessage {
+    margin-top: 1.2rem;
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    display: none; /* Hidden by default until JS sets content */
+}
+
+#statusMessage.success {
+    display: block;
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+#statusMessage.error {
+    display: block;
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+#statusMessage.loading {
+    display: block;
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+}

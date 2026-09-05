@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
             }
 
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<h2>File uploaded successfully: ${uploadedFile.newFilename}</h2><br><a href="/">Go Back</a>`);
+            res.end(`<h2>File uploaded successfully</h2><br><a href="/">Go Back</a>`);
         });
         return;
     }

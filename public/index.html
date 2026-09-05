@@ -17,6 +17,41 @@
                 <br><br>
                 <button type="submit">Upload</button>
             </form>
-        </div>
+            <p id="statusMessage" style="margin-top: 1rem; font-weight: bold;"></p>
+    </div>
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const statusMessage = document.getElementById('statusMessage');
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            statusMessage.className = 'loading';
+            statusMessage.textContent = 'Uploading...';
+
+            const formData = new FormData(uploadForm);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusMessage.className = 'success';
+                    statusMessage.textContent = data.message;
+                    uploadForm.reset();
+                } else {
+                    statusMessage.className = 'error';
+                    statusMessage.textContent = data.message;
+                }
+            } catch (err) {
+                statusMessage.className = 'error';
+                statusMessage.textContent = 'An error occurred during upload.';
+            }
+        });
+    </script>
     </body>
 </html>
