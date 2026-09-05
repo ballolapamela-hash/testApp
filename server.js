@@ -3,8 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const mime = require('mime-types');
-const formidable = require('formidable');
-
+const formidableModule = require('formidable');
+const formidable = typeof formidableModule === 'function' 
+    ? formidableModule 
+    : (formidableModule.formidable || formidableModule.default);
+    
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
