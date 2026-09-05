@@ -2,8 +2,9 @@
   "name": "file-serving-node",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "formidable": "^3.5.4",
     "mime": "^4.1.0",
     "mime-types": "^3.0.2"
   }
