@@ -5,7 +5,7 @@ const mime = require('mime-types');
 const formidable = require('formidable');
 
 const uploadDir = path.join(__dirname, 'uploads');
-if (!isFinite.existsSync(uploadDir)) {
+if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
 
@@ -15,15 +15,15 @@ const server = http.createServer((req,res) => {
             uploadDir: uploadDir,
             keepExtensions: true,
             maxFileSize: 10 * 1024 * 1024,
-            filter: function ({ name, originalFilename, mimetype }) {
+            filter: function (part) {
+                // Compatible parameter structure for formidable parts
                 const validTypes = /jpeg|jpg|png|gif|pdf|txt/;
-                const ext = path.extname(originalFilename).toLowerCase().replace('.', '');
-                const isValidMime = validTypes.test(mimetype);
-                const isValidExt = validTypes.test(ext);
+                const filename = part.originalFilename || '';
+                const mimetype = part.mimetype || '';
+                const ext = path.extname(filename).toLowerCase().replace('.', '');
 
-                return isValidMime && isValidExt;
+                return validTypes.test(mimetype) && validTypes.test(ext);
             }
-
         });
 
         form.parse(req, (err, fields, files) => {
@@ -59,7 +59,7 @@ const server = http.createServer((req,res) => {
             const contentType = mime.lookup(filePath) || 'application/octet-stream';
 
             res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf8');
+            res.end(content);
         }
     });
 });
